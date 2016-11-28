@@ -2,3 +2,27 @@ h2
   | Rchat
 p
   | A rails based minimal chat app.
+
+form.uk-form.uk-form-horizontal
+  input.uk-form-width-large[type="text" placeholder="Message" data-behavior="chat_message"]
+
+ul#messages.uk-list.uk-list-line
+
+coffee:
+  App.room = App.cable.subscriptions.create "RoomChannel",
+    connected: ->
+
+    disconnected: ->
+
+    received: (data) ->
+      console.log(data.message)
+      $('#messages').prepend("<li>#{data.message}</li>")
+
+    speak: (message)->
+      @perform 'speak', message: message
+
+  $(document).on "keypress", '[data-behavior~=chat_message]', (e) ->
+    if e.keyCode == 13
+      App.room.speak e.target.value
+      e.target.value = ""
+      e.preventDefault()
